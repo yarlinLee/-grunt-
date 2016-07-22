@@ -40,7 +40,7 @@ PS：这段先不要管，安装完了往下看
 ```  
 {
   "name": "demo",
-  "file": "zepto",  //此处为要压缩的文件名
+  "file": "base",  //此处为要压缩的文件名
   "version": "0.1.0",
   "description": "demo",
   "license": "MIT",
@@ -66,3 +66,37 @@ PS：这段先不要管，安装完了往下看
 $ e:
 $ cd grunt
 ```
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/cd.jpg)   </br>
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian1.jpg)  </br>
+然后我们的目录就会多一点东西： </br>
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian2.jpg)  </br>
+多了很多东西，先别管事干什么的，我们后面都会用到，这个时候在目录下新建js文件夹，并且搞一个base.js进去 </br>
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian3.jpg) </br>
+然后在Gruntfile.js中新增以下代码（先别管，增加再说） </br>
+```
+module.exports = function (grunt) {
+  // 项目配置
+  grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+    uglify: {
+      options: {
+        banner: '/*! <%= pkg.file %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+      },
+      build: {
+        src: 'js/<%=pkg.file %>.js',
+        dest: 'min-js/<%= pkg.file %>.min.js'
+      }
+    }
+  });
+  // 加载提供"uglify"任务的插件
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  // 默认任务
+  grunt.registerTask('default', ['uglify']);
+}
+```
+然后运行 grunt命令后
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/cd2.jpg)
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian4.jpg)
+嗯嗯，多了一个文件，并且是压缩的，不差！！！第一步结束
+
+
