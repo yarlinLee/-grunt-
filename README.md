@@ -176,8 +176,8 @@ module.exports = function (grunt) {
         separator: ';'
       },
       dist: {
-        js: ['js/enterorder.js', 'js/index.js', 'js/goodsdetal.js'],
-        min-js: 'min-js/market.js'
+        src: ['js/enterorder.js', 'js/index.js', 'js/goodsdetal.js'],
+        dest: 'min-js/market.js'
       }
     }
   });
