@@ -94,9 +94,9 @@ module.exports = function (grunt) {
   grunt.registerTask('default', ['uglify']);
 }
 ```
-然后运行 grunt命令后
-![](https://github.com/yarlinLee/-grunt-/raw/master/images/cd2.jpg)
-![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian4.jpg)
+然后运行 grunt命令后  </br>
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/cd2.jpg)  </br>
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian4.jpg)  </br>
 嗯嗯，多了一个文件，并且是压缩的，不差！！！第一步结束
 
 
