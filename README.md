@@ -99,4 +99,93 @@ module.exports = function (grunt) {
 ![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian4.jpg)  </br>
 嗯嗯，多了一个文件，并且是压缩的，不差！！！第一步结束
 
+#认识Gruntdile与package.json
+不出意外，每一个gurnt都会需要这两个文件，并且很可能就只有这两个文件（复杂的情况有所不同）</br>
+###package.json
+
+这个文件用来存储npm模块的依赖项（比如我们的打包若是依赖requireJS的插件，这里就需要配置）
+然后，我们会在里面配置一些不一样的信息，比如我们上面的file，这些数据都会放到package中
+对于package的灵活配置，我们会在后面提到
+
+###Gruntfile
+
+这个文件尤其关键，他一般干两件事情：
+① 读取package信息
+② 插件加载、注册任务，运行任务（grunt对外的接口全部写在这里面）
+
+Gruntfile一般由四个部分组成
+① 包装函数
+这个包装函数没什么东西，意思就是我们所有的代码必须放到这个函数里面
+```
+module.exports = function (grunt) {
+//你的代码
+}
+```
+这个不用知道为什么，直接将代码放入即可
+
+② 项目/任务配置
+我们在Gruntfile一般第一个用到的就是initConfig方法配置依赖信息
+
+`pkg: grunt.file.readJSON('package.json')` </br>
+这里的 grunt.file.readJSON就会将我们的配置文件读出，并且转换为json对象
+
+然后我们在后面的地方就可以采用pkg.XXX的方式访问其中的数据了
+值得注意的是这里使用的是underscore模板引擎，所以你在这里可以写很多东西
+
+uglify是一个插件的，我们在package依赖项进行了配置，这个时候我们为系统配置了一个任务
+uglify（压缩），他会干这几个事情：
+
+① 在src中找到zepto进行压缩（具体名字在package中找到）
+② 找到dest目录，没有就新建，然后将压缩文件搞进去
+③ 在上面加几个描述语言
+
+这个任务配置其实就是一个方法接口调用，按照规范来就好，暂时不予关注，内幕后期来
+这里只是定义了相关参数，但是并未加载实际函数，所以后面马上就有一句：
+
+`grunt.loadNpmTasks('grunt-contrib-uglify');`
+用于加载相关插件
+
+最后注册一个自定义任务（其实也是默认任务），所以我们下面的命令行是等效的：
+
+`grunt == grunt uglify`
+至此，我们就简单解析了一番grunt的整个操作，下面来合并文件的例子
+
+#合并文件
+
+合并文件依赖于grunt-contrib-concat插件，所以我们的package依赖项要新增一项
+```
+"devDependencies": {
+  "grunt": "~0.4.1",
+  "grunt-contrib-jshint": "~0.6.3",
+  "grunt-contrib-concat": "~0.3.0",
+  "grunt-contrib-uglify": "~0.2.1",
+  "grunt-contrib-requirejs": "~0.4.1",
+  "grunt-contrib-copy": "~0.4.1",
+  "grunt-contrib-clean": "~0.5.0",
+  "grunt-strip": "~0.2.1"
+},
+```
+然后再将代码写成这个样子
+```
+module.exports = function (grunt) {
+  // 项目配置
+  grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+    concat: {
+      options: {
+        separator: ';'
+      },
+      dist: {
+        src: ['src/zepto.js', 'src/underscore.js', 'src/backbone.js'],
+        dest: 'dest/libs.js'
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  // 默认任务
+  grunt.registerTask('default', ['concat']);
+}
+```
+运行后，神奇的一幕发生了：
+
 
