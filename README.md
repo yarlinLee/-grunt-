@@ -176,8 +176,8 @@ module.exports = function (grunt) {
         separator: ';'
       },
       dist: {
-        src: ['src/zepto.js', 'src/underscore.js', 'src/backbone.js'],
-        dest: 'dest/libs.js'
+        js: ['js/enterorder.js', 'js/index.js', 'js/goodsdetal.js'],
+        min-js: 'min-js/market.js'
       }
     }
   });
