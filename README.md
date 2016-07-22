@@ -236,7 +236,7 @@ module.exports = function (grunt) {
     uglify: {
       "my_target": {
         "files": {
-          'min-js/total.min.js': ['js/base.js', 'js/index.js', 'js/enterorder.js', 'js/goodsdetail.js']
+          'min-js/total.min.js': ['js/base.js', 'js/index.js', 'js/enterorder.js', 'js/goodsdetail.js'] //合并文件
         }
       }
     }
@@ -249,4 +249,205 @@ module.exports = function (grunt) {
 ![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian7.jpg)  </br>
 所以，我们就暂时不去关注concat了,unglify可以全包
 
+#grunt插件
+学习grunt主要就是学习grunt的插件使用，所以我们今天先来学习常用的几个插件
 
+##grunt-contrib-unglify
+
+我们仍然以简单例子学习
+
+复制代码
+```
+module.exports = function (grunt) {
+  grunt.initConfig({
+    uglify: {
+      my_target: {
+        files: {
+          'min-js/libs.min.js': ['js/index.js', 'js/goodsdetail.js']
+        }
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.registerTask('default', ['uglify']);
+}
+```
+这样会将js里面的index.js等文件打包合并到min-js的lib.min.js中
+
+###压缩一个文件夹的所有文件
+
+然后这段代码非常有意思，他会将一个文件目录里面的所有js文件打包到另一个文件夹
+
+```
+module.exports = function (grunt) {
+  grunt.initConfig({
+    uglify: {
+      my_target: {
+        files: [{
+          expand: true,
+          cwd: 'js',
+          src: '**/*.min.js',
+          dest: 'min-js'
+        }]
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+}
+```
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian8.jpg)  </br>
+
+若是你希望给你文件的头部加一段注释性语言配置banner信息即可
+
+```
+grunt.initConfig({
+  pkg: grunt.file.readJSON('package.json'),
+  uglify: {
+    options: {
+      banner: '/*! 注释信息 */'
+    },
+    my_target: {
+      files: {
+        'min-js/index.min.js': ['js/index.js']
+      }
+    }
+  }
+});
+```
+##grunt-contrib-concat
+该插件主要用于代码合并，将多个文件合并为一个，我们前面的uglify也提供了一定合并的功能
+在可选属性中我们可以设置以下属性：</br>
+① separator 用于分割各个文件的文字， </br>
+② banner 前面说到的文件头注释信息，只会出现一次 </br>
+③ footer 文件尾信息，只会出现一次 </br>
+④ stripBanners去掉源代码注释信息（只会清楚/**/这种注释）
+
+一个简单的例子：
+
+```
+module.exports = function (grunt) {
+  grunt.initConfig({
+  concat: {
+    options: {
+      separator: '/*分割*/',  //拼接不同页面代码之间加/分割/
+      banner: '/*测试*/',
+      footer: '/*footer*/'
+     
+    },
+    dist: {
+      src: ['js/index.js', 'js/enterorder.js', 'js/goodsdetail.js'],
+      dest: 'min-js/built.js',
+    }
+  }
+});
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.registerTask('default', ['concat']);
+}
+```
+合并三个文件为一个，这种在我们源码调试时候很有意义
+
+###构建两个文件夹
+
+有时候我们可能需要将合并的代码放到不同的文件，这个时候可以这样干
+
+```
+module.exports = function (grunt) {
+  grunt.initConfig({
+    concat: {
+      basic: {
+        src: ['js/index.js'],
+        dest: 'min-js/in.js'
+      },
+      extras: {
+        src: ['js/enterorder.js', 'js/goodsdetail.js'],
+        dest: 'min-js/market.js'
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.registerTask('default', ['concat']);
+}
+```
+这种功能还有这样的写法：
+
+```
+module.exports = function (grunt) {
+  grunt.initConfig({
+    concat: {
+      basic_and_extras: {
+        files: {
+          'min-js/in.js': ['js/index.js'],
+          'min-js/market.js': ['js/enterorder.js', 'js/goodsdetail.js']
+        }
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.registerTask('default', ['concat']);
+}
+```
+
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian9.jpg)  </br>
+第二种写法便于使用配置文件，具体各位选取吧，至于读取配置文件的东西我们这里就先不关注了
+
+##grunt-contrib-jshint
+
+该插件用于检测文件中的js语法问题，比如我test.js是这样写的：
+
+`alert('我是李小丫')` 
+```
+module.exports = function (grunt) {
+  grunt.initConfig({
+    jshint: { 
+      all: ['js/test.js']
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.registerTask('default', ['jshint']);
+}
+```
+运行结果是：
+```
+$ grunt jshint
+Running "jshint:all" (jshint) task
+Linting src/test.js ...ERROR
+[L1:C15] W033: Missing semicolon.
+alert('我是李小丫')
+```
+说我缺少一个分号，好像确实缺少.....如果在里面写明显的BUG的话会报错
+多数时候，我们认为没有分号无伤大雅，所以，我们文件会忽略这个错误：
+```
+jshint: {
+  options: {   //忽略缺少分号错误
+    '-W033': true 
+  },
+  all: ['js/test.js']
+}
+```
+这里有一个稍微复杂的应用，就是我们合并之前做一次检查，合并之后再做一次检查，我们可以这样写
+
+```
+module.exports = function (grunt) {
+  grunt.initConfig({
+    concat: {
+      dist: {
+        src: ['js/test01.js', 'js/test02.js'],
+        dest: 'min-js/output.js'
+      }
+    },
+    jshint: {
+      options: {
+        '-W033': true 
+      },
+      pre: ['js/test01.js', 'js/test02.js'],
+      after: ['min-js/output.js']
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.registerTask('default', ['concat', 'jshint']);
+}
+```
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/cd3.jpg)  </br>
+这里连续运行了三个任务，先做检查再合并，然后做检测，我这里写了两个简单的文件，如果将jquery搞进去的话，好像还出了不少BUG......
+所以真的要用它还要自定一些规范，我们这里暂时到这里，先进入下一个插件学习
