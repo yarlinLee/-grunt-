@@ -152,12 +152,17 @@ uglify（压缩），他会干这几个事情：
 
 #合并文件
 
-合并文件依赖于grunt-contrib-concat插件，所以我们的package依赖项要新增一项
+合并文件依赖于grunt-contrib-concat插件，
+如果grunt->node_modules里没有grunt-contrib-concat改插件，则需要用npm安装
+`npm install grunt-contrib-concat`
+
+我们的package依赖项要新增一项
+
 ```
 "devDependencies": {
   "grunt": "~0.4.1",
   "grunt-contrib-jshint": "~0.6.3",
-  "grunt-contrib-concat": "~0.3.0",
+  "grunt-contrib-concat": "~1.0.1",  //新增concat插件
   "grunt-contrib-uglify": "~0.2.1",
   "grunt-contrib-requirejs": "~0.4.1",
   "grunt-contrib-copy": "~0.4.1",
@@ -171,6 +176,31 @@ module.exports = function (grunt) {
   // 项目配置
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    concat: {  //用concat
+      options: {
+        separator: ';' //此处做修改
+      },
+      dist: {
+        src: ['js/enterorder.js', 'js/index.js', 'js/goodsdetal.js'],
+        dest: 'min-js/market.js'
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-concat');  //用concat
+  // 默认任务
+  grunt.registerTask('default', ['concat']);  //用concat
+}
+```
+运行后，神奇的一幕发生了：
+
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian5.jpg)  </br>
+三个文件被压缩成了一个，但是没有压缩，所以，我们这里再加一步操作，将之压缩后再合并
+
+```
+module.exports = function (grunt) {
+  // 项目配置
+  grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
     concat: {
       options: {
         separator: ';'
@@ -179,13 +209,44 @@ module.exports = function (grunt) {
         src: ['js/enterorder.js', 'js/index.js', 'js/goodsdetal.js'],
         dest: 'min-js/market.js'
       }
+    },
+    uglify: {
+      build: {
+        src: 'min-js/market.js',
+        dest: 'min-js/market.min.js'
+      }
     }
   });
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-concat');
   // 默认任务
-  grunt.registerTask('default', ['concat']);
+  grunt.registerTask('default', ['concat', 'uglify']);
 }
 ```
-运行后，神奇的一幕发生了：
+我这里的做法是先合并形成一个market，然后再将libs压缩成market.min.js
+
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian6.jpg)  </br>
+
+我们这里可以换个做法，先压缩再合并，其实unglify已经干了这些事情了
+```
+module.exports = function (grunt) {
+  // 项目配置
+  grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+    uglify: {
+      "my_target": {
+        "files": {
+          'min-js/total.min.js': ['js/base.js', 'js/index.js', 'js/enterorder.js', 'js/goodsdetail.js']
+        }
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  // 默认任务
+  grunt.registerTask('default', ['uglify']);
+}
+```
+![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian7.jpg)  </br>
+所以，我们就暂时不去关注concat了,unglify可以全包
 
 
