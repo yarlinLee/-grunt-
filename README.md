@@ -451,3 +451,5 @@ module.exports = function (grunt) {
 ![](https://github.com/yarlinLee/-grunt-/raw/master/images/cd3.jpg)  </br>
 这里连续运行了三个任务，先做检查再合并，然后做检测，我这里写了两个简单的文件，如果将jquery搞进去的话，好像还出了不少BUG......
 所以真的要用它还要自定一些规范，我们这里暂时到这里，先进入下一个插件学习
+
+下一个插件是grunt-contrib-requirejs，因为还没用require，所以先不分享了，有兴趣看http://www.cnblogs.com/yexiaochai/p/3603389.html
