@@ -181,7 +181,7 @@ module.exports = function (grunt) {
         separator: ';' //此处做修改
       },
       dist: {
-        src: ['js/enterorder.js', 'js/index.js', 'js/goodsdetal.js'],
+        src: ['js/enterorder.js', 'js/index.js', 'js/goodsdetail.js'],
         dest: 'min-js/market.js'
       }
     }
@@ -206,7 +206,7 @@ module.exports = function (grunt) {
         separator: ';'
       },
       dist: {
-        src: ['js/enterorder.js', 'js/index.js', 'js/goodsdetal.js'],
+        src: ['js/enterorder.js', 'js/index.js', 'js/goodsdetail.js'],
         dest: 'min-js/market.js'
       }
     },
