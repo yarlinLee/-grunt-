@@ -286,13 +286,14 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: 'js',
-          src: '**/*.min.js',
+          src: '**/*.js',
           dest: 'min-js'
         }]
       }
     }
   });
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.registerTask('default', ['uglify']);
 }
 ```
 ![](https://github.com/yarlinLee/-grunt-/raw/master/images/wenjian8.jpg)  </br>
